@@ -757,7 +757,7 @@
 
         // It's possible for another FastClick-like library delivered with third-party code to fire a click event before FastClick does (issue #44).
         // In that case, set the click-tracking flag back to false and return early. This will cause onTouchEnd to return early.
-        // 早点击事件在被fastclick触发之前已经被其他类似fastclick功能的第三方代码库触发的情况下，尽早的为事件跟踪标签返回一个false值，同时也能够尽早结束onTouchEnd事件
+        // 点击事件在被fastclick触发之前已经被其他类似fastclick功能的第三方代码库触发的情况下，尽早的为事件跟踪标签返回一个false值，同时也能够尽早结束onTouchEnd事件
         if (this.trackingClick) {
             this.targetElement = null;
             this.trackingClick = false;
