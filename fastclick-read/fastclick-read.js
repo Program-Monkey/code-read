@@ -136,7 +136,7 @@
         }
 
         // Set up event handlers as required
-        // 设置需要用到的操作事件
+        // 配置需要用到的操作事件/给指定绑定各项事件监听
         if (deviceIsAndroid) {
             layer.addEventListener('mouseover', this.onMouse, true);
             layer.addEventListener('mousedown', this.onMouse, true);
