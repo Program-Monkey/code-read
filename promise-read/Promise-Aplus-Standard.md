@@ -76,9 +76,9 @@ promise的`then`方法接收2个参数：
 
 &nbsp;&nbsp;&nbsp;&nbsp; 2.2.3.3. 执行次数不能超过一次.
 
-2.2.4. `onFulfilled` 和 `onRejected` 只能在[执行上下文](https://es5.github.io/#x10.3)堆栈只包含平台代码时才能调用.[[3.1]](#3.1).
+2.2.4. `onFulfilled` 和 `onRejected` 只能在[执行上下文](https://es5.github.io/#x10.3)堆栈只包含平台代码时才能调用.[3.1]
 
-2.2.5. `onFulfilled` 和 `onRejected` 必须作为函数被调用(即不包含`this`).[[3.2]](#3.2).
+2.2.5. `onFulfilled` 和 `onRejected` 必须作为函数被调用(即不包含`this`).[3.2].
 
 2.2.6. 同个promise的then可以被多次调用.
 
@@ -86,7 +86,7 @@ promise的`then`方法接收2个参数：
 
 &nbsp;&nbsp;&nbsp;&nbsp; 2.2.6.2. 当`promise`被拒绝时，所有的`onRejected`需按照其在`.then`中的注册顺序依次回调.
 
-2.2.7. `then` 必须返回一个promise [[3.3]](#3.3).
+2.2.7. `then` 必须返回一个promise [3.3].
 
     promise2 = promise1.then(onFulfilled, onRejected);
     
@@ -108,7 +108,7 @@ thenable的处理方式使得promise更具通用性，只需暴露一个遵循Pr
 
 2.3.1. 如果`promise`和`x`指向同一个对象，则以`TypeError`为原因将`promise`拒绝.
 
-2.3.2. 如果`x`是一个promise，采用其状态[[3.4]](#3.4)..
+2.3.2. 如果`x`是一个promise，采用其状态[3.4].
 
 &nbsp;&nbsp;&nbsp;&nbsp; 2.3.2.1. 如果`x`是等待状态，`promise`必须保持等待状态知道`x`被完成或者被拒绝.
 
@@ -118,7 +118,7 @@ thenable的处理方式使得promise更具通用性，只需暴露一个遵循Pr
 
 2.3.3. 如果`x`是一个对象或者函数：
 
-&nbsp;&nbsp;&nbsp;&nbsp; 2.3.3.1. 将`x.then`赋值给`then`.[[3.5]](#3.5).
+&nbsp;&nbsp;&nbsp;&nbsp; 2.3.3.1. 将`x.then`赋值给`then`.[3.5].
 
 &nbsp;&nbsp;&nbsp;&nbsp; 2.3.3.2. 如果获取`x.then`的时候抛出异常`e`,则以`e`作为拒绝原因将`promise`拒绝.
 
@@ -140,7 +140,7 @@ thenable的处理方式使得promise更具通用性，只需暴露一个遵循Pr
 
 2.3.4. 如果`x`不是一个对象或函数，则以`x`为参数完成`promise`.
 
-如果一个promise被一个循环的thenable链中的某个thenabled解决，而 [[Resolve]](promise, thenable) 的递归性质又使其再次被调用，遵循上述算法将会导致无限递归。虽然不是必需的，但也鼓励promise的实施者去检查是否存在递归，如果存在则以`TypeError`为拒绝原因将`promise`拒绝。[[3.6]](#3.6).
+如果一个promise被一个循环的thenable链中的某个thenabled解决，而 [[Resolve]](promise, thenable) 的递归性质又使其再次被调用，遵循上述算法将会导致无限递归。虽然不是必需的，但也鼓励promise的实施者去检查是否存在递归，如果存在则以`TypeError`为拒绝原因将`promise`拒绝。[3.6].
 
 ## 3. 注释
 
