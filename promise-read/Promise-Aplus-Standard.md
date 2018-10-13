@@ -149,12 +149,14 @@ thenable的处理方式使得promise更具通用性，只需暴露一个遵循Pr
 
 <div id="3.2"></div>3.2. 在严格模式中，`this`指向`undefined`;非严格模式中，this则指向全局对象。
 
+
 <div id="3.3"></div>3.3. promise的实现在满足所有条件下允许`promise2 === promise1`，每份实现须文档注明是否允许`promise2 === promise1`，且在何等条件下允许。
 
-<div id="3.6"></div>3.6. Implementations should not set arbitrary limits on the depth of thenable chains, and assume that beyond that arbitrary limit the recursion will be infinite. Only true cycles should lead to a `TypeError`; if an infinite chain of distinct thenables is encountered, recursing forever is the correct behavior.z
 
 <div id="3.4"></div>3.4. 通常情况下，如果`x`符合当前的实现，则认为其是一个真正的promise。此条款允许具体实现方法的使用可以接受符合要求的promise状态。
 
+
 <div id="3.5"></div>3.5. 在这过程中，为了避免多次访问`x.then`属性，需要先存储一个指向`x.then`的引用，然后测试并调用这个引用。这种预防措施有效的确保了访问属性值的一致性，因为其属性值在检索的时候可能已经发生了改变。
+
 
 <div id="3.6"></div>3.6. 实现过程中不应该对thenable链的深度做任意限制，假设超出限制数就当是无限递归。只有正确的循环递归才能抛出`TypeError`；在无限递归且都是不同thenable的情况下，无限递归才是正确的行为。
