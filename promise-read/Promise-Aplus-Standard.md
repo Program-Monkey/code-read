@@ -110,7 +110,7 @@ thenable的处理方式使得promise更具通用性，只需暴露一个遵循Pr
 
 2.3.2. 如果`x`是一个promise，采用其状态[3.4].
 
-&nbsp;&nbsp;&nbsp;&nbsp; 2.3.2.1. 如果`x`是等待状态，`promise`必须保持等待状态知道`x`被完成或者被拒绝.
+&nbsp;&nbsp;&nbsp;&nbsp; 2.3.2.1. 如果`x`是等待状态，`promise`必须保持等待状态直到`x`被完成或者被拒绝.
 
 &nbsp;&nbsp;&nbsp;&nbsp; 2.3.2.2. 如果`x`被完成，则以其值将`promise`完成.
 
