@@ -80,7 +80,7 @@ promise的`then`方法接收2个参数：
 
 2.2.5. `onFulfilled` 和 `onRejected` 必须作为函数被调用(即不包含`this`).[3.2].
 
-2.2.6. 同个promise的then可以被多次调用.
+2.2.6. 同一个promise的then可以被多次调用.
 
 &nbsp;&nbsp;&nbsp;&nbsp; 2.2.6.1. 当`promise`被完成时，所有的`onFulfilled`需按照其在`.then`中的注册顺序依次回调.
 
