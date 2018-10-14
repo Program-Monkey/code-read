@@ -14,11 +14,11 @@ promise 表示异步操作所得到的最终结果。与promise交互的主要�
 
 1.1. promise 是一个带有 `then` 方法的对象或函数，其行为符合此规范.
 
-1.2. “thenable” 是一个定义了`then`方法的对象或者函数.
+1.2. thenable 是一个定义了`then`方法的对象或者函数.
 
 1.3. value 是一个合法的JavaScript值(包括 `undefined`，thenable ，抑或 promise)
 
-1.4. “exception” 是通过`throw`语句抛出的异常.
+1.4. exception 是通过`throw`语句抛出的异常.
 
 1.5. reason 是promise被拒绝的原因.
 
