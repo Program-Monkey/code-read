@@ -1,4 +1,4 @@
-【原文地址】Promises/A+(https://promisesaplus.com/){:target="_blank"}
+【原文地址】Promises/A+(https://promisesaplus.com/)
 
 一份开放、通用的 JavaScript promise 规范文档 - 由实施者制定，供实施者参考。
 
@@ -6,7 +6,7 @@ promise 表示异步操作所得到的最终结果。与promise交互的主要�
 
 此规范文档详细描述了`.then`方法的执行流程，所有符合Promise/A+规范的promise实现均可参照这份标准。所以，这将是一份稳定的规范。尽管 Promise/A+ 组织偶尔可能会为了处理一些新发现的边界情况而修改此规范，但这些修改都是微小且向下兼容的。如果Promise/A+ 组织需要进行大规模或不向下兼容的更新，则会事先进行谨慎地考虑、详尽的探讨和严格的测试。
 
-从历史上看，现有的 Promises/A+ 明确了早期的[Promises/A proposal](http://wiki.commonjs.org/wiki/Promises/A){:target="_blank"}标准，扩展了一些原规范的行为，删除一些原规范中未明确和有问题的部分。
+从历史上看，现有的 Promises/A+ 明确了早期的[Promises/A proposal](http://wiki.commonjs.org/wiki/Promises/A)标准，扩展了一些原规范的行为，删除一些原规范中未明确和有问题的部分。
 
 最后，核心的 Promises/A+ 规范不涉及如何创建、完成和拒绝 promise，而是专注于提供一个通用的 `.then` 方法。上述的内容将来可能会在相关规范中提及。
 
@@ -76,7 +76,7 @@ promise的`then`方法接收2个参数：
 
 &nbsp;&nbsp;&nbsp;&nbsp; 2.2.3.3. 执行次数不能超过一次.
 
-2.2.4. `onFulfilled` 和 `onRejected` 只能在[执行上下文](https://es5.github.io/#x10.3){:target="_blank"}堆栈只包含平台代码时才能调用.[3.1]
+2.2.4. `onFulfilled` 和 `onRejected` 只能在[执行上下文](https://es5.github.io/#x10.3)堆栈只包含平台代码时才能调用.[3.1]
 
 2.2.5. `onFulfilled` 和 `onRejected` 必须作为函数被调用(即不包含`this`).[3.2].
 
