@@ -205,7 +205,7 @@ function reject(self, newValue) {
     if (Promise._onReject) {
         Promise._onReject(self, newValue);
     }
-    // 依次向下执行新的promise
+    // 依次向下执行后续的promise
     finale(self);
 }
 
