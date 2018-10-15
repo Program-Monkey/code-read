@@ -92,7 +92,7 @@ promise的`then`方法接收2个参数：
     
 &nbsp;&nbsp;&nbsp;&nbsp; 2.2.7.1. 如果`onFulfilled` 或者 `onRejected`返回一个值`x`，执行Promise解决过程`[[Resolve]](promise2,x)`.
 
-&nbsp;&nbsp;&nbsp;&nbsp; 2.2.7.2. 如果`onFulfilled` 或者 `onRejected`抛出一个异常`e`，`promise2`必须也被拒绝，并且以异常`e`作为原因.
+&nbsp;&nbsp;&nbsp;&nbsp; 2.2.7.2. 如果`onFulfilled` 或者 `onRejected`抛出一个异常`e`，`promise2`必须被拒绝，并且以异常`e`作为原因.
 
 &nbsp;&nbsp;&nbsp;&nbsp; 2.2.7.3. 如果`onFulfilled`不是函数且`promise1`是被完成的，则`promise2`必须被完成，并且以`promise1`的结果作为完成的结果.
 
