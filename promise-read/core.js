@@ -65,39 +65,51 @@ function Promise(fn) {
     if (typeof fn !== 'function') {
         throw new TypeError('Promise constructor\'s argument is not a function');
     }
-    // 延期状态 
-    // 0：初始状态，当前promise的_deferreds属性值为null
-    // 1：当前promise的_deferreds属性值设置为新promise
-    // 2：当前promise的_deferreds中加入新promise
+    // .then 结果状态 
+    // 0：初始状态，当前 promise 的 _deferreds 属性值为 null
+    // 1：当前 promise 的 _deferreds 属性值设置为新 promise
+    // 2：当前 promise 的 _deferreds 中加入新 promise
     this._deferredState = 0;
     // 状态
     this._state = 0;
-    // 结果
+    // 最终结果
     this._value = null;
-    // 当前promise中将返回的新promise，值为对象或者列表
+    // promise 对象数组，值为 .then 方法里注册的回调函数返回的 promise
     this._deferreds = null;
     if (fn === noop) return;
     // 注册 onHandle 和 onReject
     doResolve(fn, this);
 }
 
-
 Promise._onHandle = null;
 Promise._onReject = null;
 Promise._noop = noop;
 
 Promise.prototype.then = function (onFulfilled, onRejected) {
-    // 如果当前的对象的constructor指向构造函数不是Promise，产生一个新的Promise，并且以当前的onFulfilled和onRejected作为新Promise的回调处理，之后又返回新的Promise
+    /* * 如果当前的对象的 constructor 指向构造函数不是 Promise
+     * * 则将其包装成一个 promise，
+     * * 并且以当前的 onFulfilled 和 onRejected 作为新 Promise 的回调处理，
+     * * 然后返回该 promise
+     * */
     if (this.constructor !== Promise) {
         return safeThen(this, onFulfilled, onRejected);
     }
-    // 正常执行，执行onFulfilled和onRejected，返回新的Promise
+
+    // 执行 onFulfilled 和 onRejected ，处理当前 promise 和 deferred 对象
     var res = new Promise(noop);
     handle(this, new Handler(onFulfilled, onRejected, res));
     return res;
 };
 
-// 如果调用.then的对象不是Promise对象，则生成Promise再处理
+// 构造一个新的promise
+function Handler(onFulfilled, onRejected, promise) {
+    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+    this.promise = promise;
+}
+
+// 将不是 promise 的对象包装成 promise 对象并返回包装后的 promise
+// 实际情况就是至今未发现怎么用的... 根据代码模拟了新的构造函数测试，未果
 function safeThen(self, onFulfilled, onRejected) {
     return new self.constructor(function (resolve, reject) {
         var res = new Promise(noop);
@@ -106,35 +118,43 @@ function safeThen(self, onFulfilled, onRejected) {
     });
 }
 
-// 传入当前Promise对象和新Promise对象
+// 传入当前promise对象和deferred对象
 function handle(self, deferred) {
-    // 如果当前promise需要采用上一个promise的结果，以上一个promise的结果作为当前promise的结果
+    // 如果当前 promise 需要采用其他 promise 的结果，
+    // 则将 self 的 _value赋值给 self (在resolve方法中self._value存储了其他promise的结果)
     while (self._state === 3) {
         self = self._value;
     }
-    // 
     if (Promise._onHandle) {
         Promise._onHandle(self);
     }
-    // 如果还在pending状态
+    // 如果还处于pending状态
     if (self._state === 0) {
-        // self._deferredState 为0时，将_deferredState设为1，且将新promise赋值到self._deferreds
+        // self._deferredState 为0时，
+        // 将 _deferredState 设为1，
+        // 且将结果 promise 赋值到 self._deferreds
         if (self._deferredState === 0) {
             self._deferredState = 1;
             self._deferreds = deferred;
             return;
         }
-        // self._deferredState 为1时，将_deferredState设为2，且将当前self._deferreds和新promise赋值到self._deferreds(此时self._deferreds已存在值)
+        // self._deferredState 为1时，
+        // 将 _deferredState 设为2，
+        // 且将当前 self._deferreds 和结果 promise 赋值给 self._deferreds
+        // self._deferreds 此时值为 self._deferredState 为1的时候赋值的 deferred
+        // 也就是一个promise对象数组
         if (self._deferredState === 1) {
             self._deferredState = 2;
             self._deferreds = [self._deferreds, deferred];
             return;
         }
-        // 当self._deferredState 为2时，当前promise的_deferreds中push进新的promise
+        // 当self._deferredState 为2时，
+        // 当前promise的_deferreds中push进新的promise
         self._deferreds.push(deferred);
         return;
     }
-    // 如果promise已经被完成/拒绝，则执行 resolve/reject
+    // 如果 promise 已经被完成/拒绝，则执行 handleResolved
+    // 传入当前 promise 及当前执行的 .then 中返回的 promise
     handleResolved(self, deferred);
 }
 
@@ -150,7 +170,7 @@ function handleResolved(self, deferred) {
             }
             return;
         }
-        // 如果报错则以reject完成.then的执行
+        // 如果报错则以 reject 完成
         var ret = tryCallOne(cb, self._value);
         if (ret === IS_ERROR) {
             reject(deferred.promise, LAST_ERROR);
@@ -160,7 +180,7 @@ function handleResolved(self, deferred) {
     });
 }
 
-// resolve promise . 传入当前promise及其结果
+// 解决promise。 传入promise及需要处理的值
 function resolve(self, newValue) {
     // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
     if (newValue === self) {
@@ -169,21 +189,25 @@ function resolve(self, newValue) {
             new TypeError('A promise cannot be resolved with itself.')
         );
     }
+    // 如果 promise 的 _value 有值(表示当前promise此时已完成/已拒绝)
     if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
-        // 获取下一个promise的 .then
+        // 获取后续 .then 方法
         var then = getThen(newValue);
-        // 如果获取.then出错的话，以reject处理
+        // 如果获取 .then 出错的话，以reject处理
         if (then === IS_ERROR) {
             return reject(self, LAST_ERROR);
         }
-        // 返回结果是个promise 并且 存在 then
+        // 如果取到的 then 和 promise.then是同一个值，
+        // 且最终值是个 promise，
+        // 将 promise 改变状态及设置值，执行finale
         if (then === self.then && newValue instanceof Promise) {
             self._state = 3;
             self._value = newValue;
+            // 执行 finale，传入 promise
             finale(self);
             return;
         } else if (typeof then === 'function') {
-            // 下个promise的.then注册到该promise的回调事件里
+            // 如果 then 是个函数，已 newValue 为 this 来执行 .then，并且执行 doResolve 做回调绑定
             doResolve(then.bind(newValue), self);
             return;
         }
@@ -192,11 +216,12 @@ function resolve(self, newValue) {
     self._state = 1;
     // 存储结果
     self._value = newValue;
-    // 依次向下执行新的promise
+
+    // 执行 finale，传入 .then 方法中返回的 promise
     finale(self);
 }
 
-// reject promise . 传入当前promise及其结果
+// 拒绝 promise . 传入 promise 及拒绝原因
 function reject(self, newValue) {
     // 状态变化为拒绝状态
     self._state = 2;
@@ -205,17 +230,18 @@ function reject(self, newValue) {
     if (Promise._onReject) {
         Promise._onReject(self, newValue);
     }
-    // 依次向下执行后续的promise
+    // 执行 finale，传入 promise
     finale(self);
 }
 
-// finale . 传入当前promise，并且将余下的promise都进行处理
+// finale . 传入 .then 里返回的 promise
 function finale(self) {
-    // 
+    // 如果该 promise 只在 .then 方法中注册一个回调
     if (self._deferredState === 1) {
         handle(self, self._deferreds);
         self._deferreds = null;
     }
+    // 如果该 promise 在多个 .then 方法中注册多个回调
     if (self._deferredState === 2) {
         for (var i = 0; i < self._deferreds.length; i++) {
             handle(self, self._deferreds[i]);
@@ -224,35 +250,31 @@ function finale(self) {
     }
 }
 
-// 构造一个新的promise
-function Handler(onFulfilled, onRejected, promise) {
-    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
-    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
-    this.promise = promise;
-}
-
 /**
  * Take a potentially misbehaving resolver function and make sure
  * onFulfilled and onRejected are only called once.
  *
  * Makes no guarantees about asynchrony.
  */
-// Promise初始化的时候，通过 doResolve 将回调函数分别绑到此时的 Promise对象 上
+// promise 初始化的时候，通过 doResolve 将回调函数分别绑到当前 promise 对象上
 function doResolve(fn, promise) {
     var done = false;
     // 执行 resolve/reject 回调
     var res = tryCallTwo(fn, function (value) {
         if (done) return;
         done = true;
+        // 以当前 promise 执行和其值执行 resolve
         resolve(promise, value);
     }, function (reason) {
         if (done) return;
         done = true;
+        // 以当前 promise 执行和其值执行 reject
         reject(promise, reason);
     });
     // 如果 done === false 并且 fn 抛出错误，则以 reject 回调执行
     if (!done && res === IS_ERROR) {
         done = true;
+        // 以当前 promise 执行和其值执行 reject 
         reject(promise, LAST_ERROR);
     }
 }
