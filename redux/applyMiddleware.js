@@ -1,4 +1,4 @@
-import compose from './compose'
+import compose from "./compose";
 
 /**
  * Creates a store enhancer that applies middleware to the dispatch method
@@ -21,30 +21,29 @@ import compose from './compose'
 export default function applyMiddleware(...middlewares) {
   // 传入 middlewares
   return createStore => (...args) => {
-    
-    const store = createStore(...args)
+    const store = createStore(...args);
     let dispatch = () => {
       throw new Error(
         `Dispatching while constructing your middleware is not allowed. ` +
           `Other middleware would not be applied to this dispatch.`
-      )
-    }
+      );
+    };
 
     // hooks 内部能做的操作  仅 getState 和 dispatch
     const middlewareAPI = {
       getState: store.getState,
       dispatch: (...args) => dispatch(...args)
-    }
+    };
     // 将hooks处理，以 middlewareAPI 作为参数执行并且得到 hooks 的内部函数
-    const chain = middlewares.map(middleware => middleware(middlewareAPI))
-    // 依次作为函数参数来执行middleware，达到middleware的串联效果(此处较为精巧，可类比 async await 的切洋葱方式)
-    // 如 middleware A(ABefore,AAfter) B(BBefore,BAfter) C(CBefore,CAfter) 
+    const chain = middlewares.map(middleware => middleware(middlewareAPI));
+    // 依次作为函数参数来执行middleware(柯里化)，达到middleware的串联效果(此处较为精巧，可类比 async await 的切洋葱方式)
+    // 如 middleware A(ABefore,AAfter) B(BBefore,BAfter) C(CBefore,CAfter)
     // 则执行顺序是  ABefore - BBefore - CBefore - (真实的操作) - AAfter - BAfter - CAfter
-    dispatch = compose(...chain)(store.dispatch)
+    dispatch = compose(...chain)(store.dispatch);
 
     return {
       ...store,
       dispatch
-    }
-  }
+    };
+  };
 }
