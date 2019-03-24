@@ -17,7 +17,6 @@ import compose from "./compose";
  * @returns {Function} A store enhancer applying the middleware.
  */
 // applyMiddleware 对应的是createStore里的enhancer
-// middleware 其实就是针对 dispatch 时候所插入的执行函数 也可以理解为 dispatch 前后的 hooks，以下以hooks作为代表
 export default function applyMiddleware(...middlewares) {
   // 传入 middlewares
   return createStore => (...args) => {
@@ -29,12 +28,12 @@ export default function applyMiddleware(...middlewares) {
       );
     };
 
-    // hooks 内部能做的操作  仅 getState 和 dispatch
+    // middleware 内部能做的操作  仅 getState 和 dispatch
     const middlewareAPI = {
       getState: store.getState,
       dispatch: (...args) => dispatch(...args)
     };
-    // 将hooks处理，以 middlewareAPI 作为参数执行并且得到 hooks 的内部函数
+    // 将middleware处理，以 middlewareAPI 作为参数执行并且得到 middleware 的内部函数
     const chain = middlewares.map(middleware => middleware(middlewareAPI));
     // 依次作为函数参数来执行middleware(柯里化)，达到middleware的串联效果(此处较为精巧，可类比 async await 的切洋葱方式)
     // 如 middleware A(ABefore,AAfter) B(BBefore,BAfter) C(CBefore,CAfter)
