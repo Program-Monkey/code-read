@@ -38,7 +38,7 @@ export default function applyMiddleware(...middlewares) {
     const chain = middlewares.map(middleware => middleware(middlewareAPI));
     // 依次作为函数参数来执行middleware(柯里化)，达到middleware的串联效果(此处较为精巧，可类比 async await 的切洋葱方式)
     // 如 middleware A(ABefore,AAfter) B(BBefore,BAfter) C(CBefore,CAfter)
-    // 则执行顺序是  ABefore - BBefore - CBefore - (真实的操作) - AAfter - BAfter - CAfter
+    // 则执行顺序是  ABefore - BBefore - CBefore - (真实的操作) - CAfter - BAfter - AAfter
     dispatch = compose(...chain)(store.dispatch);
 
     return {
