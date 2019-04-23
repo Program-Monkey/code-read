@@ -1,18 +1,18 @@
-import ActionTypes from './utils/actionTypes'
-import warning from './utils/warning'
-import isPlainObject from './utils/isPlainObject'
+import ActionTypes from "./utils/actionTypes";
+import warning from "./utils/warning";
+import isPlainObject from "./utils/isPlainObject";
 
-// 报错  state undefined
+// 报错  state  undefined
 function getUndefinedStateErrorMessage(key, action) {
-  const actionType = action && action.type
+  const actionType = action && action.type;
   const actionDescription =
-    (actionType && `action "${String(actionType)}"`) || 'an action'
+    (actionType && `action "${String(actionType)}"`) || "an action";
 
   return (
     `Given ${actionDescription}, reducer "${key}" returned undefined. ` +
     `To ignore an action, you must explicitly return the previous state. ` +
     `If you want this reducer to hold no value, you can return null instead of undefined.`
-  )
+  );
 }
 
 // 报错  state unexpected
@@ -22,17 +22,17 @@ function getUnexpectedStateShapeWarningMessage(
   action,
   unexpectedKeyCache
 ) {
-  const reducerKeys = Object.keys(reducers)
+  const reducerKeys = Object.keys(reducers);
   const argumentName =
     action && action.type === ActionTypes.INIT
-      ? 'preloadedState argument passed to createStore'
-      : 'previous state received by the reducer'
+      ? "preloadedState argument passed to createStore"
+      : "previous state received by the reducer";
 
   if (reducerKeys.length === 0) {
     return (
-      'Store does not have a valid reducer. Make sure the argument passed ' +
-      'to combineReducers is an object whose values are reducers.'
-    )
+      "Store does not have a valid reducer. Make sure the argument passed " +
+      "to combineReducers is an object whose values are reducers."
+    );
   }
 
   if (!isPlainObject(inputState)) {
@@ -41,49 +41,49 @@ function getUnexpectedStateShapeWarningMessage(
       {}.toString.call(inputState).match(/\s([a-z|A-Z]+)/)[1] +
       `". Expected argument to be an object with the following ` +
       `keys: "${reducerKeys.join('", "')}"`
-    )
+    );
   }
 
   const unexpectedKeys = Object.keys(inputState).filter(
     key => !reducers.hasOwnProperty(key) && !unexpectedKeyCache[key]
-  )
+  );
 
   unexpectedKeys.forEach(key => {
-    unexpectedKeyCache[key] = true
-  })
+    unexpectedKeyCache[key] = true;
+  });
 
-  if (action && action.type === ActionTypes.REPLACE) return
+  if (action && action.type === ActionTypes.REPLACE) return;
 
   if (unexpectedKeys.length > 0) {
     return (
-      `Unexpected ${unexpectedKeys.length > 1 ? 'keys' : 'key'} ` +
+      `Unexpected ${unexpectedKeys.length > 1 ? "keys" : "key"} ` +
       `"${unexpectedKeys.join('", "')}" found in ${argumentName}. ` +
       `Expected to find one of the known reducer keys instead: ` +
       `"${reducerKeys.join('", "')}". Unexpected keys will be ignored.`
-    )
+    );
   }
 }
 
 // 断言  reducer 规范
 function assertReducerShape(reducers) {
   Object.keys(reducers).forEach(key => {
-    const reducer = reducers[key]
-    const initialState = reducer(undefined, { type: ActionTypes.INIT })
+    const reducer = reducers[key];
+    const initialState = reducer(undefined, { type: ActionTypes.INIT });
 
-    if (typeof initialState === 'undefined') {
+    if (typeof initialState === "undefined") {
       throw new Error(
         `Reducer "${key}" returned undefined during initialization. ` +
           `If the state passed to the reducer is undefined, you must ` +
           `explicitly return the initial state. The initial state may ` +
           `not be undefined. If you don't want to set a value for this reducer, ` +
           `you can use null instead of undefined.`
-      )
+      );
     }
 
     if (
       typeof reducer(undefined, {
         type: ActionTypes.PROBE_UNKNOWN_ACTION()
-      }) === 'undefined'
+      }) === "undefined"
     ) {
       throw new Error(
         `Reducer "${key}" returned undefined when probed with a random type. ` +
@@ -94,9 +94,9 @@ function assertReducerShape(reducers) {
           `current state for any unknown actions, unless it is undefined, ` +
           `in which case you must return the initial state, regardless of the ` +
           `action type. The initial state may not be undefined, but can be null.`
-      )
+      );
     }
-  })
+  });
 }
 
 /**
@@ -117,73 +117,73 @@ function assertReducerShape(reducers) {
  */
 // combineReducers 合并reducers 主要为了形成state tree而做规范
 export default function combineReducers(reducers) {
-  const reducerKeys = Object.keys(reducers)
+  const reducerKeys = Object.keys(reducers);
   // 用来存处理后的 reducers 也就是value是函数的key:value键值对
-  const finalReducers = {}
+  const finalReducers = {};
   for (let i = 0; i < reducerKeys.length; i++) {
-    const key = reducerKeys[i]
+    const key = reducerKeys[i];
 
-    if (process.env.NODE_ENV !== 'production') {
-      if (typeof reducers[key] === 'undefined') {
-        warning(`No reducer provided for key "${key}"`)
+    if (process.env.NODE_ENV !== "production") {
+      if (typeof reducers[key] === "undefined") {
+        warning(`No reducer provided for key "${key}"`);
       }
     }
 
-    if (typeof reducers[key] === 'function') {
-      finalReducers[key] = reducers[key]
+    if (typeof reducers[key] === "function") {
+      finalReducers[key] = reducers[key];
     }
   }
-  const finalReducerKeys = Object.keys(finalReducers)
+  const finalReducerKeys = Object.keys(finalReducers);
 
   // This is used to make sure we don't warn about the same
   // keys multiple times.
-  let unexpectedKeyCache
-  if (process.env.NODE_ENV !== 'production') {
-    unexpectedKeyCache = {}
+  let unexpectedKeyCache;
+  if (process.env.NODE_ENV !== "production") {
+    unexpectedKeyCache = {};
   }
 
-  let shapeAssertionError
+  let shapeAssertionError;
   try {
-    assertReducerShape(finalReducers)
+    assertReducerShape(finalReducers);
   } catch (e) {
-    shapeAssertionError = e
+    shapeAssertionError = e;
   }
 
   // 返回最终给 createStore 用的reducers
   return function combination(state = {}, action) {
     if (shapeAssertionError) {
-      throw shapeAssertionError
+      throw shapeAssertionError;
     }
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       const warningMessage = getUnexpectedStateShapeWarningMessage(
         state,
         finalReducers,
         action,
         unexpectedKeyCache
-      )
+      );
       if (warningMessage) {
-        warning(warningMessage)
+        warning(warningMessage);
       }
     }
 
-    let hasChanged = false
-    const nextState = {}
+    let hasChanged = false;
+    const nextState = {};
     // 循环执行每个reducer，取返回值做nextState
     for (let i = 0; i < finalReducerKeys.length; i++) {
-      const key = finalReducerKeys[i]
-      const reducer = finalReducers[key]
-      const previousStateForKey = state[key]
-      const nextStateForKey = reducer(previousStateForKey, action)
-      if (typeof nextStateForKey === 'undefined') {
-        const errorMessage = getUndefinedStateErrorMessage(key, action)
-        throw new Error(errorMessage)
+      const key = finalReducerKeys[i];
+      const reducer = finalReducers[key];
+      const previousStateForKey = state[key];
+      const nextStateForKey = reducer(previousStateForKey, action);
+      if (typeof nextStateForKey === "undefined") {
+        const errorMessage = getUndefinedStateErrorMessage(key, action);
+        throw new Error(errorMessage);
       }
-      nextState[key] = nextStateForKey
+      nextState[key] = nextStateForKey;
       // 如果有一个state变化，那么hasChanged便为ture
-      hasChanged = hasChanged || nextStateForKey !== previousStateForKey
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
     }
     // 根据 hasChanged 来返回 nextState 或者 state
-    return hasChanged ? nextState : state
-  }
+    return hasChanged ? nextState : state;
+  };
 }
